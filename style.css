@@ -1,0 +1,157 @@
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+:root {
+  --primary-color: #360b6b;
+  --main-white: #f4f4f4;
+  --main-red: #ff4545;
+  --main-green: #0eb90e;
+  --main-opacity: 0.6;
+  --main-transition: all 0.3s;
+  --main-padding: 1rem;
+}
+
+header {
+  background: var(--primary-color);
+  color: var(--main-white);
+  padding: var(--main-padding);
+}
+
+header > * {
+  padding: var(--main-padding) 0;
+}
+
+header .account {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.account .income,
+.account .expense {
+  padding: 0.3rem 0;
+}
+
+main {
+  padding: var(--main-padding);
+  margin-top: -10px;
+  border-radius: 10px 10px 0 0;
+  background: #fff;
+}
+
+.chart .toggle > * {
+  transition: var(--main-transition);
+}
+
+.toggle > *:not(.active) {
+  opacity: 0.4;
+}
+
+.lists > *:not(.show) {
+  display: none;
+}
+
+.form {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: var(--main-padding);
+  width: 100%;
+  display: flex;
+  gap: 0.2em;
+}
+
+.form input {
+  border: none;
+  outline: none;
+  box-shadow: 0px 0px 2px #ccc;
+}
+
+#expense-add,
+#income-add {
+  background: url(./icons/plus.png) no-repeat center / cover;
+  width: 2rem;
+  text-align: center;
+  aspect-ratio: 1 / 1;
+}
+
+.list {
+  display: flex;
+  padding: 0.5rem 0;
+  box-shadow: 1px 1px 3px #ccc;
+  margin-bottom: 0.5rem;
+}
+
+.list .entry {
+  flex-grow: 1;
+}
+
+.edit {
+  background: url(./icons/edit.png) no-repeat center / cover !important;
+  width: 1rem;
+  aspect-ratio: 1 / 1;
+}
+
+.delete {
+  background: url(./icons/trash.png) no-repeat center / cover !important;
+  width: 1rem;
+  aspect-ratio: 1 / 1;
+}
+
+.btn {
+  display: inline-block;
+  border: none;
+  outline: none;
+  background: transparent;
+  text-decoration: none;
+  padding: 0.5em 0.8em;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: var(--main-white);
+}
+
+.btn-sm {
+  padding: 0.2rem 0;
+  margin-right: 0.5rem;
+}
+
+.text-primary {
+  color: var(--primary-color);
+}
+
+.text-success {
+  color: var(--main-green);
+}
+
+.text-alert {
+  color: var(--main-red);
+}
+
+ul {
+  list-style: none;
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Budget App</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="budget-container">
+      <header>
+        <section class="app-name">
+          <h3>BudgetApp</h3>
+        </section>
+        <div>
+          Balance:
+          <h1 class="balance">$0</h1>
+        </div>
+        <section class="account text-center">
+          <div>
+            <div>Income:</div>
+            <div class="income">$0</div>
+          </div>
+          <div class="chart">
+            <div></div>
+          </div>
+          <div>
+            <div>Expense:</div>
+            <div class="expense">$0</div>
+          </div>
+        </section>
+      </header>
+      <main>
+        <h1>Dashboard</h1>
+        <div class="toggle">
+          <button class="btn btn-sm active" id="income-btn">Income</button>
+          <button class="btn btn-sm" id="expense-btn">Expense</button>
+          <button class="btn btn-sm" id="all-btn">All</button>
+        </div>
+        <section class="lists">
+          <section id="income" class="show">
+            <ul></ul>
+            <form class="form" id="income-form">
+              <input
+                type="text"
+                id="income-title"
+                placeholder="Title..."
+                value=""
+              />
+              <input
+                type="number"
+                id="income-amount"
+                placeholder="Amount..."
+                value=""
+              />
+              <button
+                type="submit"
+                class="btn btn-primary"
+                id="income-add"
+              ></button>
+            </form>
+          </section>
+          <section id="expense">
+            <ul></ul>
+            <form class="form" id="expense-form">
+              <input type="text" id="expense-title" placeholder="Title..." />
+              <input
+                type="number"
+                id="expense-amount"
+                placeholder="Amount..."
+              />
+              <button
+                type="submit"
+                class="btn btn-primary"
+                id="expense-add"
+              ></button>
+            </form>
+          </section>
+          <section id="all">
+            <ul></ul>
+          </section>
+        </section>
+      </main>
+    </div>
+    <dialog id="delete-module">
+      <h3 id="module-title"></h3>
+      <p id="module-text"></p>
+      <div id="module-buttons">
+        <button id="cancel-delete">Cancel</button>
+        <button id="confirm-delete">Confirm</button>
+      </div>
+    </dialog>
+  </body>
+  <script src="./chart.js"></script>
+  <script type="module" src="./main.js" defer></script>
+</html>
