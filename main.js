@@ -117,19 +117,6 @@ function onDelete(data, index) {
   updateDOM();
 }
 
-/*
-  fire onEdit function when edit is pressed;
-
-  get the index of the element that was pushed
-
-  check which type of input pushed the input button
-  if expenses
-    write data to expense form
-  if incomes
-    write data to income form
-  
-*/
-
 function onEdit(elem) {
   const index = elem.dataset.index;
   const targetElement = elem.parentElement.parentElement;
@@ -141,9 +128,11 @@ function onEdit(elem) {
   if (type === "income") {
     incomeTitle.value = title;
     incomeAmount.value = amount;
+    incomeTitle.focus();
   } else {
     expenseTitle.value = title;
     expenseAmount.value = amount;
+    expenseTitle.focus();
   }
 
   [incomeForm, expenseForm].forEach((item) =>

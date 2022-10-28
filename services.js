@@ -23,7 +23,10 @@ export function clearElements(elementsArray) {
 }
 
 export function clearInputs(inputsArray) {
-  inputsArray.forEach((item) => (item.value = ""));
+  inputsArray.forEach((item) => {
+    item.value = "";
+    item.blur();
+  });
 }
 
 export function validateForm(title, amount) {
