@@ -3,6 +3,7 @@ import {
   clearElements,
   clearInputs,
   validateForm,
+  setDataToLocaleStorage,
 } from "./services.js";
 import { Confirm } from "./confirm.js";
 
@@ -25,7 +26,7 @@ const expenseAmount = document.querySelector("#expense-amount");
 const allContainer = document.querySelector("#all");
 const allList = document.querySelector("#all ul");
 
-const data = {
+let data = {
   incomeTotal: 0,
   expenseTotal: 0,
   list: [],
@@ -67,6 +68,7 @@ function onAddElement(e) {
     date: Date.now(),
   });
 
+  setDataToLocaleStorage(data);
   updateDOM();
 }
 
@@ -114,6 +116,7 @@ function onDelete(data, index) {
     data.expenseTotal -= deletedElement.amount;
   }
 
+  setDataToLocaleStorage(data);
   updateDOM();
 }
 
@@ -168,6 +171,8 @@ function onEditSubmit(e, props) {
 
   data.list.splice(index, 1, newObj);
 
+  console.log(data);
+  setDataToLocaleStorage(data);
   updateDOM();
 
   [incomeForm, expenseForm].forEach((item) =>
@@ -188,7 +193,12 @@ expenseBtn.addEventListener("click", () =>
 allBtn.addEventListener("click", () => onToggle.call(allBtn, allContainer));
 incomeAmount.addEventListener("keypress", invalidateChars);
 expenseAmount.addEventListener("keypress", invalidateChars);
-document.addEventListener("DOMContentLoaded", updateDOM);
+document.addEventListener("DOMContentLoaded", function () {
+  if (localStorage.getItem("budget-data")) {
+    data = JSON.parse(localStorage.getItem("budget-data"));
+  }
+  updateDOM();
+});
 
 [incomeForm, expenseForm].forEach((elem) =>
   elem.addEventListener("submit", onAddElement)

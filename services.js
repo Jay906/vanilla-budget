@@ -45,3 +45,9 @@ export function validateForm(title, amount) {
 
   return true;
 }
+
+export function setDataToLocaleStorage(data) {
+  let value = JSON.stringify(data);
+
+  localStorage.setItem("budget-data", value);
+}
