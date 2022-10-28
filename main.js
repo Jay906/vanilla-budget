@@ -1,4 +1,11 @@
-import { invalidateChars } from "./services.js";
+import {
+  invalidateChars,
+  clearElements,
+  clearInputs,
+  validateForm,
+} from "./services.js";
+import { Confirm } from "./confirm.js";
+
 const balance = document.querySelector(".balance");
 const income = document.querySelector(".income");
 const expense = document.querySelector(".expense");
@@ -17,9 +24,6 @@ const expenseTitle = document.querySelector("#expense-title");
 const expenseAmount = document.querySelector("#expense-amount");
 const allContainer = document.querySelector("#all");
 const allList = document.querySelector("#all ul");
-const modulElement = document.querySelector("#delete-module");
-const modulConfirm = document.querySelector("#confirm-delete");
-const modulCancel = document.querySelector("#cancel-delete");
 
 const data = {
   incomeTotal: 0,
@@ -32,19 +36,6 @@ function onToggle(elem) {
   document.querySelector(".toggle .active").classList.remove("active");
   this.classList.add("active");
   elem.classList.add("show");
-}
-
-function validateForm(title, amount) {
-  if (!title && !amount) {
-    console.error("Title and amount should not be empty");
-    return false;
-  }
-  if (title.length > 25) {
-    console.error("Title should have max 25 characters");
-    return false;
-  }
-
-  return true;
 }
 
 function onAddElement(e) {
@@ -91,25 +82,14 @@ function updateDOM() {
       clearInputs([expenseTitle, expenseAmount]);
     }
 
-    addEntry(allList, item.id, item.amount, item.title);
+    addEntry(allList, index, item.amount, item.title);
   });
 
-  console.log(data);
   income.innerHTML = `$${data.incomeTotal}`;
   expense.innerHTML = `$${data.expenseTotal}`;
   balance.innerHTML = `$${data.incomeTotal - data.expenseTotal}`;
 
   updateChart(data.incomeTotal, data.expenseTotal);
-}
-
-function clearElements(elementsArray) {
-  elementsArray.forEach((elem) => {
-    elem.innerHTML = "";
-  });
-}
-
-function clearInputs(inputsArray) {
-  inputsArray.forEach((item) => (item.value = ""));
 }
 
 function addEntry(list, index, amount, title) {
@@ -126,18 +106,29 @@ function addEntry(list, index, amount, title) {
   list.insertAdjacentHTML("afterbegin", elem);
 }
 
-function onDelete(elem) {
-  if (confirm("Are you sure you want to delete?")) {
-    const index = elem.dataset.id;
-    const [deletedElement] = data.list.splice(index, 1);
-    if (deletedElement.type === "income") {
-      data.incomeTotal -= deletedElement.amount;
-    } else {
-      data.expenseTotal -= deletedElement.amount;
-    }
-    updateDOM();
+function onDelete(data, index) {
+  const [deletedElement] = data.list.splice(index, 1);
+  if (deletedElement.type === "income") {
+    data.incomeTotal -= deletedElement.amount;
+  } else {
+    data.expenseTotal -= deletedElement.amount;
   }
+
+  updateDOM();
 }
+
+/*
+  fire onEdit function when edit is pressed;
+
+  get the index of the element that was pushed
+
+  check which type of input pushed the input button
+  if expenses
+    write data to expense form
+  if incomes
+    write data to income form
+  
+*/
 
 function onEdit(elem) {
   const index = elem.dataset.index;
@@ -214,13 +205,22 @@ document.addEventListener("DOMContentLoaded", updateDOM);
   elem.addEventListener("submit", onAddElement)
 );
 
-[incomeList, expenseList].forEach((item) => {
+[incomeList, expenseList, allList].forEach((item) => {
   item.addEventListener("click", function (e) {
     if (e.target) {
       if (e.target.classList.contains("edit")) {
         onEdit(e.target);
       } else if (e.target.classList.contains("delete")) {
-        onDelete(e.target);
+        Confirm.open({
+          title: `Are you sure you want to delete ${
+            data.list[e.target.dataset.id].title
+          }?`,
+          message: "After deleting you will not be able to restore the data",
+          okMessage: "Yes",
+          cancelMessage: "Cancel",
+          index: e.target.dataset.id,
+          onOk: () => onDelete(data, e.target.dataset.id),
+        });
       }
     }
   });

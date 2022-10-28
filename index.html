@@ -42,18 +42,21 @@
           <section id="income" class="show">
             <ul></ul>
             <form class="form" id="income-form">
-              <input
-                type="text"
-                id="income-title"
-                placeholder="Title..."
-                value=""
-              />
-              <input
-                type="number"
-                id="income-amount"
-                placeholder="Amount..."
-                value=""
-              />
+              <div class="inputs">
+                <input
+                  type="text"
+                  id="income-title"
+                  placeholder="Title..."
+                  value=""
+                />
+                <input
+                  type="number"
+                  step="0.01"
+                  id="income-amount"
+                  placeholder="Amount..."
+                  value=""
+                />
+              </div>
               <button
                 type="submit"
                 class="btn btn-primary"
@@ -64,12 +67,15 @@
           <section id="expense">
             <ul></ul>
             <form class="form" id="expense-form">
-              <input type="text" id="expense-title" placeholder="Title..." />
-              <input
-                type="number"
-                id="expense-amount"
-                placeholder="Amount..."
-              />
+              <div class="inputs">
+                <input type="text" id="expense-title" placeholder="Title..." />
+                <input
+                  type="number"
+                  step="0.01"
+                  id="expense-amount"
+                  placeholder="Amount..."
+                />
+              </div>
               <button
                 type="submit"
                 class="btn btn-primary"
@@ -83,14 +89,6 @@
         </section>
       </main>
     </div>
-    <dialog id="delete-module">
-      <h3 id="module-title"></h3>
-      <p id="module-text"></p>
-      <div id="module-buttons">
-        <button id="cancel-delete">Cancel</button>
-        <button id="confirm-delete">Confirm</button>
-      </div>
-    </dialog>
   </body>
   <script src="./chart.js"></script>
   <script type="module" src="./main.js" defer></script>
