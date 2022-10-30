@@ -5,6 +5,7 @@ import {
   validateForm,
   setDataToLocaleStorage,
 } from "./services.js";
+import { Edit } from "./edit.js";
 import { Confirm } from "./confirm.js";
 
 const balance = document.querySelector(".balance");
@@ -96,11 +97,13 @@ function updateDOM() {
 
 function addEntry(list, index, amount, title) {
   const elem = `
-    <li id=${index} class="list">
-      <div class="entry">${title}: ${amount.toFixed(2)}</div>
-      <div class="list-settings">
-        <button class="btn btn-sm text-alert edit" data-index=${index}></button>
-        <button class="btn btn-sm delete" data-id=${index}></button>
+    <li id=${index}>
+      <div class="list">
+        <div class="entry">${title}: ${amount.toFixed(2)}</div>
+        <div class="list-settings">
+          <button class="btn btn-sm text-alert edit" data-index=${index}></button>
+          <button class="btn btn-sm delete" data-id=${index}></button>
+        </div>
       </div>
     </li>
   `;
@@ -120,69 +123,83 @@ function onDelete(data, index) {
   updateDOM();
 }
 
-function onEdit(elem) {
-  const index = elem.dataset.index;
-  const targetElement = elem.parentElement.parentElement;
-  targetElement.style.display = "none";
-  const obj = data.list[index];
-
-  const { title, amount, type } = obj;
-
-  if (type === "income") {
-    incomeTitle.value = title;
-    incomeAmount.value = amount;
-    incomeTitle.focus();
-  } else {
-    expenseTitle.value = title;
-    expenseAmount.value = amount;
-    expenseTitle.focus();
+function onEdit(id, title, amount, initialAmount) {
+  const element = data.list[id];
+  element.title = title;
+  element.amount = amount;
+  if (element.type === "income") {
+    data.incomeTotal += amount - initialAmount;
+  } else if ((element.type = "expense")) {
+    data.expenseTotal += amount - intitalAmount;
   }
-
-  [incomeForm, expenseForm].forEach((item) =>
-    item.removeEventListener("submit", onAddElement)
-  );
-
-  [incomeForm, expenseForm].forEach((elem) =>
-    elem.addEventListener("submit", (e) => onEditSubmit(e, { index, obj }))
-  );
-}
-
-function onEditSubmit(e, props) {
-  e.preventDefault();
-
-  let title, amount;
-
-  if (e.target.id === "income-form") {
-    title = incomeTitle.value;
-    amount = +Number(incomeAmount.value).toFixed(2);
-  } else {
-    title = expense.value;
-    amount = +Number(expense.value).toFixed(2);
-  }
-
-  if (!validateForm(title, amount)) {
-    console.log("Cannot do it baby");
-    return;
-  }
-
-  const { index, obj } = props;
-
-  const newObj = Object.assign({}, obj, { title, amount });
-
-  data.list.splice(index, 1, newObj);
-
-  console.log(data);
+  data.list[id] = element;
   setDataToLocaleStorage(data);
   updateDOM();
-
-  [incomeForm, expenseForm].forEach((item) =>
-    item.removeEventListener("submit", onEditSubmit)
-  );
-
-  [incomeForm, expenseForm].forEach((elem) =>
-    elem.addEventListener("submit", onAddElement)
-  );
 }
+
+// function onEdit(elem) {
+//   const index = elem.dataset.index;
+//   const targetElement = elem.parentElement.parentElement;
+//   targetElement.style.display = "none";
+//   const obj = data.list[index];
+
+//   const { title, amount, type } = obj;
+
+//   if (type === "income") {
+//     incomeTitle.value = title;
+//     incomeAmount.value = amount;
+//     incomeTitle.focus();
+//   } else {
+//     expenseTitle.value = title;
+//     expenseAmount.value = amount;
+//     expenseTitle.focus();
+//   }
+
+//   [incomeForm, expenseForm].forEach((item) =>
+//     item.removeEventListener("submit", onAddElement)
+//   );
+
+//   [incomeForm, expenseForm].forEach((elem) =>
+//     elem.addEventListener("submit", (e) => onEditSubmit(e, { index, obj }))
+//   );
+// }
+
+// function onEditSubmit(e, props) {
+//   e.preventDefault();
+
+//   let title, amount;
+
+//   if (e.target.id === "income-form") {
+//     title = incomeTitle.value;
+//     amount = +Number(incomeAmount.value).toFixed(2);
+//   } else {
+//     title = expense.value;
+//     amount = +Number(expense.value).toFixed(2);
+//   }
+
+//   if (!validateForm(title, amount)) {
+//     console.log("Cannot do it baby");
+//     return;
+//   }
+
+//   const { index, obj } = props;
+
+//   const newObj = Object.assign({}, obj, { title, amount });
+
+//   data.list.splice(index, 1, newObj);
+
+//   console.log(data);
+//   setDataToLocaleStorage(data);
+//   updateDOM();
+
+//   [incomeForm, expenseForm].forEach((item) =>
+//     item.removeEventListener("submit", onEditSubmit)
+//   );
+
+//   [incomeForm, expenseForm].forEach((elem) =>
+//     elem.addEventListener("submit", onAddElement)
+//   );
+// }
 
 incomeBtn.addEventListener("click", () =>
   onToggle.call(incomeBtn, incomeContainer)
@@ -208,13 +225,18 @@ document.addEventListener("DOMContentLoaded", function () {
   item.addEventListener("click", function (e) {
     if (e.target) {
       if (e.target.classList.contains("edit")) {
-        onEdit(e.target);
+        Edit.open({
+          title: data.list[e.target.dataset.index].title,
+          amount: data.list[e.target.dataset.index].amount,
+          target: e.target.parentElement.parentElement.parentElement,
+          onSave: onEdit,
+        });
       } else if (e.target.classList.contains("delete")) {
         Confirm.open({
           title: `Are you sure you want to delete ${
             data.list[e.target.dataset.id].title
           }?`,
-          message: "After deleting you will not be able to restore the data",
+          message: "After deleting, you will not be able to restore the data!",
           okMessage: "Yes",
           cancelMessage: "Cancel",
           index: e.target.dataset.id,
