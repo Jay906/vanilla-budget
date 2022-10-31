@@ -7,6 +7,7 @@ import {
 } from "./services.js";
 import { Edit } from "./edit.js";
 import { Confirm } from "./confirm.js";
+import { Message } from "./message.js";
 
 const balance = document.querySelector(".balance");
 const income = document.querySelector(".income");
@@ -71,6 +72,11 @@ function onAddElement(e) {
 
   setDataToLocaleStorage(data);
   updateDOM();
+  Message.open({
+    message: "Element successfully added",
+    displayDuration: 3000,
+    classList: "bg-success",
+  });
 }
 
 function updateDOM() {
@@ -121,6 +127,11 @@ function onDelete(data, index) {
 
   setDataToLocaleStorage(data);
   updateDOM();
+  Message.open({
+    message: "Element was deleted successfully",
+    displayDuration: 3000,
+    classList: "bg-danger",
+  });
 }
 
 function onEdit(id, title, amount, initialAmount) {
@@ -130,11 +141,16 @@ function onEdit(id, title, amount, initialAmount) {
   if (element.type === "income") {
     data.incomeTotal += amount - initialAmount;
   } else if ((element.type = "expense")) {
-    data.expenseTotal += amount - intitalAmount;
+    data.expenseTotal += amount - initialAmount;
   }
   data.list[id] = element;
   setDataToLocaleStorage(data);
   updateDOM();
+  Message.open({
+    message: "Element was edited successfully",
+    displayDuration: 3000,
+    classList: "bg-success",
+  });
 }
 
 // function onEdit(elem) {

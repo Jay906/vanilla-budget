@@ -265,3 +265,58 @@ input {
   border: 0;
   border-bottom: 1px solid #000;
 }
+
+article.message {
+  z-index: 1200;
+  position: absolute;
+  width: 95%;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+article.message .message-container {
+  position: relative;
+  display: flex;
+  padding: 1rem;
+  gap: 0.3rem;
+  border-radius: 5px;
+  overflow: hidden;
+  justify-content: space-between;
+}
+
+article.message .message.container p {
+  flex-grow: 1;
+}
+
+article.message button {
+  font-size: 1.5rem;
+  position: absolute;
+  top: 0;
+  right: 5px;
+  color: inherit;
+  background: inherit;
+  border: none;
+}
+
+.bg-danger {
+  background: var(--main-red);
+  color: var(--main-white);
+}
+
+.bg-success {
+  background: var(--main-green);
+  color: var(--main-white);
+}
+
+.text-danger {
+  color: var(--main-red);
+}
+
+.text-success {
+  color: var(--main-green);
+}
+
+.text-dark {
+  color: #040404;
+}

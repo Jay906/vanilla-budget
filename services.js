@@ -1,3 +1,5 @@
+import { Message } from "./message.js";
+
 export function uid() {
   let a = new Uint32Array(3);
   window.crypto.getRandomValues(a);
@@ -35,7 +37,11 @@ export function validateForm(title, amount) {
     return false;
   }
   if (title.length > 25) {
-    console.error("Title should have max 25 characters");
+    Message.open({
+      message: "Title should not contain more than 25 chars",
+      displayDuration: 4000,
+      classList: "bg-danger",
+    });
     return false;
   }
   if (!isFinite(amount)) {
