@@ -28,6 +28,15 @@ header {
   background: var(--primary-color);
   color: var(--main-white);
   padding: var(--main-padding);
+  position: relative;
+}
+
+.clearAll {
+  padding: 0.4em 0.8em;
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 header > * {

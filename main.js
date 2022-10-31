@@ -27,6 +27,7 @@ const expenseTitle = document.querySelector("#expense-title");
 const expenseAmount = document.querySelector("#expense-amount");
 const allContainer = document.querySelector("#all");
 const allList = document.querySelector("#all ul");
+const clearAll = document.querySelector(".clearAll");
 
 let data = {
   incomeTotal: 0,
@@ -260,5 +261,22 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       }
     }
+  });
+});
+clearAll.addEventListener("click", function () {
+  Confirm.open({
+    title: "Are you sure you want to remove everything?",
+    message: "After deleting you will not be able to restore the data!",
+    okMessage: "Yes, delete",
+    cancelMessage: "Cancel",
+    onOk: () => {
+      localStorage.clear();
+      data = {
+        incomeTotal: 0,
+        expenseTotal: 0,
+        list: [],
+      };
+      updateDOM();
+    },
   });
 });
