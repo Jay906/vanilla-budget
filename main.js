@@ -12,22 +12,21 @@ import { Message } from "./message.js";
 const balance = document.querySelector(".balance");
 const income = document.querySelector(".income");
 const expense = document.querySelector(".expense");
-const incomeBtn = document.querySelector("#income-btn");
-const expenseBtn = document.querySelector("#expense-btn");
-const allBtn = document.querySelector("#all-btn");
-const incomeContainer = document.querySelector("#income");
-const incomeList = document.querySelector("#income ul");
-const incomeForm = document.querySelector("#income-form");
-const incomeTitle = document.querySelector("#income-title");
-const incomeAmount = document.querySelector("#income-amount");
-const expenseContainer = document.querySelector("#expense");
-const expenseList = document.querySelector("#expense ul");
-const expenseForm = document.querySelector("#expense-form");
-const expenseTitle = document.querySelector("#expense-title");
-const expenseAmount = document.querySelector("#expense-amount");
-const allContainer = document.querySelector("#all");
 const allList = document.querySelector("#all ul");
 const clearAll = document.querySelector(".clearAll");
+
+// filter code starts here;
+
+const filterFeed = document.querySelector("#filter-list");
+
+function onFilterChange(e) {
+  filterFeed.value = e.target.value;
+  updateLists();
+}
+
+filterFeed.addEventListener("change", onFilterChange);
+
+// filter code ends here
 
 let data = {
   incomeTotal: 0,
@@ -35,33 +34,30 @@ let data = {
   list: [],
 };
 
-function onToggle(elem) {
-  document.querySelector(".lists .show").classList.remove("show");
-  document.querySelector(".toggle .active").classList.remove("active");
-  this.classList.add("active");
-  elem.classList.add("show");
-}
+// new code starts here
+
+const formContainer = document.querySelector(".form-container");
+const formToggle = document.querySelector(".form-toggle");
+const form = document.querySelector("#entry-form");
+const titleInput = document.querySelector("#entry-title");
+const amountInput = document.querySelector("#entry-amount");
+const categoryButtons = document.querySelector(".categories .buttons");
 
 function onAddElement(e) {
   e.preventDefault();
+  const type = document.querySelector(".active-category").dataset.category;
+  const title = titleInput.value;
+  const amount = +Number(amountInput.value).toFixed(2);
 
-  let amount, title, type;
-
-  if (e.target.id === "income-form") {
-    title = incomeTitle.value;
-    amount = +Number(incomeAmount.value).toFixed(2);
-    data.incomeTotal += amount;
-    type = "income";
-  } else {
-    title = expenseTitle.value;
-    amount = +Number(expenseAmount.value).toFixed(2);
-    amount = +amount;
-    data.expenseTotal += amount;
-    type = "expense";
-  }
   if (!validateForm(title, amount)) {
     console.log("Cannot do it baby");
     return;
+  }
+
+  if (type === "income") {
+    data.incomeTotal += amount;
+  } else if (type === "expense") {
+    data.expenseTotal += amount;
   }
 
   data.list.push({
@@ -71,6 +67,7 @@ function onAddElement(e) {
     date: Date.now(),
   });
 
+  clearInputs([titleInput, amountInput]);
   setDataToLocaleStorage(data);
   updateDOM();
   Message.open({
@@ -80,29 +77,59 @@ function onAddElement(e) {
   });
 }
 
-function updateDOM() {
-  clearElements([incomeList, expenseList, allList]);
+function openEntryForm() {
+  formToggle.classList.add("hide");
+  formContainer.classList.remove("hide");
+}
 
-  data.list.forEach((item, index) => {
-    if (item.type === "income") {
-      addEntry(incomeList, index, item.amount, item.title);
-      clearInputs([incomeTitle, incomeAmount]);
-    } else if (item.type === "expense") {
-      addEntry(expenseList, index, item.amount, item.title);
-      clearInputs([expenseTitle, expenseAmount]);
-    }
+function onCloseEntryForm(e) {
+  if (
+    e.target.classList.contains("close-entry-form") ||
+    e.target === formContainer
+  ) {
+    formContainer.classList.add("hide");
+    formToggle.classList.remove("hide");
+  }
+}
 
-    addEntry(allList, index, item.amount, item.title);
+function toggleEntryCategories(e) {
+  const currentActive = categoryButtons.querySelector(".active-category");
+  currentActive.classList.remove("active-category");
+  e.target.classList.add("active-category");
+}
+
+categoryButtons.addEventListener("click", toggleEntryCategories);
+formContainer.addEventListener("click", onCloseEntryForm);
+formToggle.addEventListener("click", openEntryForm);
+form.addEventListener("submit", onAddElement);
+
+function updateLists() {
+  let displayElements = [];
+
+  clearElements([allList]);
+
+  if (filterFeed.value === "all") {
+    displayElements = [...data.list];
+  } else {
+    displayElements = data.list.filter(
+      (item) => item.type === filterFeed.value
+    );
+  }
+  displayElements.forEach((item, index) => {
+    addEntry(allList, index, item.title, item.amount);
   });
+}
 
+function updateDOM() {
   income.innerHTML = `$${data.incomeTotal}`;
   expense.innerHTML = `$${data.expenseTotal}`;
   balance.innerHTML = `$${data.incomeTotal - data.expenseTotal}`;
 
+  updateLists();
   updateChart(data.incomeTotal, data.expenseTotal);
 }
 
-function addEntry(list, index, amount, title) {
+function addEntry(list, index, title, amount) {
   const elem = `
     <li id=${index}>
       <div class="list">
@@ -131,7 +158,7 @@ function onDelete(data, index) {
   Message.open({
     message: "Element was deleted successfully",
     displayDuration: 3000,
-    classList: "bg-danger",
+    classList: "bg-success",
   });
 }
 
@@ -154,79 +181,7 @@ function onEdit(id, title, amount, initialAmount) {
   });
 }
 
-// function onEdit(elem) {
-//   const index = elem.dataset.index;
-//   const targetElement = elem.parentElement.parentElement;
-//   targetElement.style.display = "none";
-//   const obj = data.list[index];
-
-//   const { title, amount, type } = obj;
-
-//   if (type === "income") {
-//     incomeTitle.value = title;
-//     incomeAmount.value = amount;
-//     incomeTitle.focus();
-//   } else {
-//     expenseTitle.value = title;
-//     expenseAmount.value = amount;
-//     expenseTitle.focus();
-//   }
-
-//   [incomeForm, expenseForm].forEach((item) =>
-//     item.removeEventListener("submit", onAddElement)
-//   );
-
-//   [incomeForm, expenseForm].forEach((elem) =>
-//     elem.addEventListener("submit", (e) => onEditSubmit(e, { index, obj }))
-//   );
-// }
-
-// function onEditSubmit(e, props) {
-//   e.preventDefault();
-
-//   let title, amount;
-
-//   if (e.target.id === "income-form") {
-//     title = incomeTitle.value;
-//     amount = +Number(incomeAmount.value).toFixed(2);
-//   } else {
-//     title = expense.value;
-//     amount = +Number(expense.value).toFixed(2);
-//   }
-
-//   if (!validateForm(title, amount)) {
-//     console.log("Cannot do it baby");
-//     return;
-//   }
-
-//   const { index, obj } = props;
-
-//   const newObj = Object.assign({}, obj, { title, amount });
-
-//   data.list.splice(index, 1, newObj);
-
-//   console.log(data);
-//   setDataToLocaleStorage(data);
-//   updateDOM();
-
-//   [incomeForm, expenseForm].forEach((item) =>
-//     item.removeEventListener("submit", onEditSubmit)
-//   );
-
-//   [incomeForm, expenseForm].forEach((elem) =>
-//     elem.addEventListener("submit", onAddElement)
-//   );
-// }
-
-incomeBtn.addEventListener("click", () =>
-  onToggle.call(incomeBtn, incomeContainer)
-);
-expenseBtn.addEventListener("click", () =>
-  onToggle.call(expenseBtn, expenseContainer)
-);
-allBtn.addEventListener("click", () => onToggle.call(allBtn, allContainer));
-incomeAmount.addEventListener("keypress", invalidateChars);
-expenseAmount.addEventListener("keypress", invalidateChars);
+amountInput.addEventListener("keypress", invalidateChars);
 document.addEventListener("DOMContentLoaded", function () {
   if (localStorage.getItem("budget-data")) {
     data = JSON.parse(localStorage.getItem("budget-data"));
@@ -234,35 +189,30 @@ document.addEventListener("DOMContentLoaded", function () {
   updateDOM();
 });
 
-[incomeForm, expenseForm].forEach((elem) =>
-  elem.addEventListener("submit", onAddElement)
-);
-
-[incomeList, expenseList, allList].forEach((item) => {
-  item.addEventListener("click", function (e) {
-    if (e.target) {
-      if (e.target.classList.contains("edit")) {
-        Edit.open({
-          title: data.list[e.target.dataset.index].title,
-          amount: data.list[e.target.dataset.index].amount,
-          target: e.target.parentElement.parentElement.parentElement,
-          onSave: onEdit,
-        });
-      } else if (e.target.classList.contains("delete")) {
-        Confirm.open({
-          title: `Are you sure you want to delete ${
-            data.list[e.target.dataset.id].title
-          }?`,
-          message: "After deleting, you will not be able to restore the data!",
-          okMessage: "Yes",
-          cancelMessage: "Cancel",
-          index: e.target.dataset.id,
-          onOk: () => onDelete(data, e.target.dataset.id),
-        });
-      }
+allList.addEventListener("click", function (e) {
+  if (e.target) {
+    if (e.target.classList.contains("edit")) {
+      Edit.open({
+        title: data.list[e.target.dataset.index].title,
+        amount: data.list[e.target.dataset.index].amount,
+        target: e.target.parentElement.parentElement.parentElement,
+        onSave: onEdit,
+      });
+    } else if (e.target.classList.contains("delete")) {
+      Confirm.open({
+        title: `Are you sure you want to delete ${
+          data.list[e.target.dataset.id].title
+        }?`,
+        message: "After deleting, you will not be able to restore the data!",
+        okMessage: "Yes",
+        cancelMessage: "Cancel",
+        index: e.target.dataset.id,
+        onOk: () => onDelete(data, e.target.dataset.id),
+      });
     }
-  });
+  }
 });
+
 clearAll.addEventListener("click", function () {
   Confirm.open({
     title: "Are you sure you want to remove everything?",
@@ -277,6 +227,11 @@ clearAll.addEventListener("click", function () {
         list: [],
       };
       updateDOM();
+      Message.open({
+        message: "All data was removed successfully",
+        displayDuration: 3000,
+        classList: "bg-success",
+      });
     },
   });
 });

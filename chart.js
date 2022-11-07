@@ -31,6 +31,12 @@ function drawCircle(color, ratio, anticlockwise) {
   ctx.stroke();
 }
 
+// 3000 / (3000 + 3000) = 3000 / 6000 = 1/2;
+// income / expense 3000 / 3000 = 1
+
+// income + expense / income
+// income / expense
+
 function updateChart(income, outcome) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
