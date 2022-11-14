@@ -32,7 +32,7 @@ export function clearInputs(inputsArray) {
 }
 
 export function validateForm(title, amount) {
-  if (!title && !amount) {
+  if (!title.trim() && !amount) {
     console.error("Title and amount should not be empty");
     return false;
   }
@@ -45,6 +45,7 @@ export function validateForm(title, amount) {
     return false;
   }
   if (!isFinite(amount)) {
+    console.log(amount);
     console.log("Amount input must be number only");
     return false;
   }

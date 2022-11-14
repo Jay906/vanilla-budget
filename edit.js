@@ -5,6 +5,7 @@ export const Edit = {
     options = Object.assign(
       {},
       {
+        beingEdited: true,
         title: "",
         amount: "",
         target: "",
@@ -39,14 +40,9 @@ export const Edit = {
 
     button.addEventListener("click", () => {
       const title = titleInput.value;
-      const amount = amountInput.value;
+      const amount = +Number(amountInput.value).toFixed(2);
       if (!validateForm(title, amount)) return false;
-      options.onSave(
-        options.target.id,
-        titleInput.value,
-        +amountInput.value,
-        options.amount
-      );
+      options.onSave(options.target.id, title, amount, options.amount);
       this.close(editContainer);
     });
 
